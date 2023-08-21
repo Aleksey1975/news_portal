@@ -1,0 +1,23 @@
+{% extends 'newsportal/default.html' %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h1>Authors</h1>
+<h5>The best author is {{ best }}!</h5>
+<hr>
+{% for author in authors %}
+<h3>{{ author }}</h3>
+<p>Rating {{ author.rating }}</p>
+{% if author.post_set.all %}
+<h4>Posts</h4>
+{% for post in  author.post_set.all %}
+<p><a href="{% url 'showpost' post.pk %}">{{ post }}</a></p>
+{% endfor %}
+{% else %}
+<h4>No Posts</h4>
+{% endif %}
+
+<hr>
+{% endfor %}
+
+{% endblock %}

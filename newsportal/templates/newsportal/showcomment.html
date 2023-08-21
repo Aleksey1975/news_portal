@@ -1,0 +1,10 @@
+{% extends 'newsportal/default.html' %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<p>{{ comment.content }}</p>
+<p>Rating {{ comment.rating }}</p>
+<a href="{% url 'likecomment' comment.pk %}">like</a>
+<a href="{% url 'dislikecomment' comment.pk %}">dislike</a>
+
+{% endblock content %}

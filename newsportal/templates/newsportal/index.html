@@ -1,0 +1,50 @@
+{% extends 'newsportal/default.html' %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h1>Posts</h1>
+<hr>
+<hr>
+<hr>
+<h5>The best post is {{ best_post }}!</h5>
+<p>Created date: {{best_post.time_created|date:'Y-m-d'}}, author - {{best_post.author}},
+ rating {{best_post.rating}}, title - {{best_post.title}}</p>
+<p><b>Preveiw: </b>{{best_post.preview}}</p>
+
+{% if best_post.comment_set.all %}
+<h5>Comments</h5>
+{% for comment in best_post.comment_set.all %}
+<p>Comment {{ forloop.counter }}: date: {{ comment.date_created|date:'Y-m-d' }}, rating {{comment.rating}},
+ content: {{ comment.content }}</p>
+{% endfor %}
+
+{% else %}
+<h5>No Comments</h5>
+
+{% endif %}
+<hr>
+<hr>
+<hr>
+{% for post in posts %}
+<a href="{% url 'showpost' post.pk %}"><h3>{{ post.title }}</h3></a>
+
+Author - {{ post.author }}<br>
+{{ post.get_type_post_display }}<br>
+{% if post.category.all %}
+Categories - {% for cat in post.category.all %}
+{{ cat }}    {% if not forloop.last %}, {% endif %}
+{% endfor %}
+{% else %} Category not defined
+{% endif %}
+<br>
+Rating  {{ post.rating }}<br>
+{% if  post.comment_set.all %}
+Comments - {% for comment in post.comment_set.all %}
+{{ comment.user }} - {{ comment.content }} | rating  {{ comment.rating }}<br>
+{% endfor %}
+{% else %} No comments
+{% endif %}
+<br>
+<hr>
+{% endfor %}
+{% endblock content %}

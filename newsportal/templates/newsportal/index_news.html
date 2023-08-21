@@ -1,0 +1,17 @@
+{% extends 'newsportal/default.html' %}
+{% block title %}News{% endblock title %}
+
+{% block content %}
+{% if news %}
+<h1>News</h1>
+{% for n in news %}
+<a href="{% url 'one_news' n.pk %}"><h4>{{ n.title }}</h4></a>
+<h4>{{ n.time_created|date:'Y-m-d' }}</h4>
+<p>{{ n.content|truncatechars:20 }}</p>
+<hr>
+{% endfor %}
+{% else %}  <h1>No News</h1>
+{% endif %}
+
+
+{% endblock content %}

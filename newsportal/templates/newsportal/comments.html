@@ -1,0 +1,13 @@
+{% extends 'newsportal/default.html' %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<h1>Comments</h1>
+{% for comment in comments %}
+Comment from user {{ comment.user }} to <a href="{% url 'showpost' comment.post.pk %}">{{ comment.post }}</a><br>
+<a href="{% url 'showcomment' comment.pk %}">{{ comment.content }}</a><br>
+rating {{ comment.rating }}<br>
+<hr>
+{% endfor %}
+
+{% endblock content %}
