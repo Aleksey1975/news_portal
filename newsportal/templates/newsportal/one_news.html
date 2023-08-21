@@ -1,11 +1,37 @@
 {% extends 'newsportal/default.html' %}
 {% load custom_filters %}
 
-{% block title %}News{% endblock title %}
+{% block title %}Новости{% endblock title %}
 
-{% block content %}
-<h1>{{ news.title }}</h1>
-<p>{{ news.content|censor }}</p>
+{% block content %} <br>
 <h4>{{ news.time_created|date:'d:m:Y' }}</h4>
+{% if news.category.all %}
+ {% for cat in news.category.all %}
+{{ cat }}    {% if not forloop.last %}, {% endif %}
+{% endfor %}
+
+{% endif %}
+<h1>{{ news.title|censor }}</h1>
+<p>{{ news.content|censor }}</p>
+
+
+
+<h5>Рейтинг: {{ news.rating }}</h5>
+
+
+
+<a href="{% url 'like' news.pk %}">like</a>
+<a href="{% url 'dislike' news.pk %}">dislike</a>
+<p><a href="{% url 'news_edit' news.pk %}">Изменить</a>
+    <a href="{% url 'news_delete' news.pk %}">Удалить</a></p>
+
+{% if  news.comment_set.all %}
+Комментарии: {% for comment in news.comment_set.all %} <br>
+{{ comment.user }} <br> <a href="{% url 'showcomment' comment.pk %}">{{ comment.content|censor }}</a>
+<br> рейтинг  {{ comment.rating }}<hr>
+{% endfor %}
+{% else %} Комментариев нет
+{% endif %}
 
 {% endblock content %}
+

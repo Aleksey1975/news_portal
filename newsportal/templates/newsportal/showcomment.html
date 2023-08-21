@@ -1,8 +1,9 @@
 {% extends 'newsportal/default.html' %}
+{% load custom_filters %}
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-<p>{{ comment.content }}</p>
+<p>{{ comment.content|censor }}</p>
 <p>Rating {{ comment.rating }}</p>
 <a href="{% url 'likecomment' comment.pk %}">like</a>
 <a href="{% url 'dislikecomment' comment.pk %}">dislike</a>

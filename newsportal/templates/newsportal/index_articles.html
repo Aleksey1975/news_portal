@@ -1,6 +1,6 @@
 {% extends 'newsportal/default.html' %}
 {% load custom_filters %}
-{% block title %}Новости{% endblock title %}
+{% block title %}Статьи{% endblock title %}
 
 {% block content %}
  <br>
@@ -12,25 +12,24 @@
    <hr>
 {% if news %}
 {% include 'newsportal/includes/paginations.html' %}
-<h1>Новости</h1>
+<h1>Статьи</h1>
 {% for n in news %}
-<h4>{{ n.time_created|date:'Y-m-d' }} | Рейтинг: {{ n.rating }}
-    | Автор: {{ n.author }} | Комментариев: {{ n.comment_set.count }} </h4>
+<h4>{{ n.time_created|date:'Y-m-d' }} | Рейтинг: {{ n.rating }} | Комментариев: {{ n.comment_set.count }} </h4>
 <h6>
 
  {% for cat in n.category.all %}
 {{ cat }}    {% if not forloop.last %}, {% endif %}
 {% endfor %}
 </h6>
-<a href="{% url 'one_news' n.pk %}"><h4>{{ n.title|censor }}</h4></a>
+<a href="{% url 'one_article' n.pk %}"><h4>{{ n.title|censor }}</h4></a>
 <p>{{ n.content|truncatechars:200|censor}}</p>
 <hr>
 {% endfor %}
 {% include 'newsportal/includes/paginations.html' %}
 {% else %}
-<h1>Новостей нет</h1>
+<h1>Статей
+    нет</h1>
 
 {% endif %}
 
 <br><br>{% endblock content %}
-

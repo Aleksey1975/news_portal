@@ -1,13 +1,18 @@
 {% extends 'newsportal/default.html' %}
+{% load custom_filters %}
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-<h1>Comments</h1>
+{% if comments %}
+<h1>Комментарии</h1>
 {% for comment in comments %}
-Comment from user {{ comment.user }} to <a href="{% url 'showpost' comment.post.pk %}">{{ comment.post }}</a><br>
-<a href="{% url 'showcomment' comment.pk %}">{{ comment.content }}</a><br>
-rating {{ comment.rating }}<br>
+Комментарий от пользователя {{ comment.user }} к посту
+<a href="{% url 'showpost' comment.post.pk %}">{{ comment.post }}</a><br>
+<a href="{% url 'showcomment' comment.pk %}">{{ comment.content|censor }}</a><br>
+рейтинг {{ comment.rating }}<br>
 <hr>
 {% endfor %}
-
+{% else %}
+<h1>Комментариев нет</h1>
+{% endif %}
 {% endblock content %}

@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import F, Sum, Max, Min, Avg, Count
+from django.urls import reverse
 
 article = 'a'
 news = 'n'
 POSTS = (
-    (article, 'article'),
-    (news, 'news')
+    (article, 'Статья'),
+    (news, 'Новость')
 )
 class Author(models.Model):
     author = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -34,13 +35,16 @@ class Category(models.Model):
         return self.name
 
 class Post(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    type_post = models.CharField(max_length=1, choices=POSTS)
-    time_created = models.DateTimeField(auto_now_add=True)
-    category = models.ManyToManyField(Category, through="PostCategory")
-    title =  models.CharField(max_length=255)
-    content = models.TextField()
-    rating = models.SmallIntegerField(default=0)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Автор')
+    type_post = models.CharField(max_length=1, choices=POSTS, verbose_name='Тип поста')
+    time_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    category = models.ManyToManyField(Category, through="PostCategory", verbose_name='Категория')
+    title =  models.CharField(max_length=255, verbose_name='Оглавление')
+    content = models.TextField( verbose_name='Содержание')
+    rating = models.SmallIntegerField(default=0, verbose_name='Рейтинг')
+
+    def get_absolute_url(self):
+        return reverse('one_news', args=[str(self.id)])
 
     def __str__(self):
         return f'{self.get_type_post_display()} - {self.title}'
@@ -59,7 +63,7 @@ class PostCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.post , self.category
+         return f'{str(self.post)} , {str(self.category)}'
 
 
 
@@ -69,6 +73,9 @@ class Comment(models.Model):
     content = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
     rating = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return f'Комментаий к посту {self.post} от пользователя {self.user}'
 
 
     def like(self):

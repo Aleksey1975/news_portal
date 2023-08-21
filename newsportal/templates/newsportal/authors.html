@@ -1,20 +1,21 @@
 {% extends 'newsportal/default.html' %}
+{% load custom_filters %}
 {% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
-<h1>Authors</h1>
-<h5>The best author is {{ best }}!</h5>
+<h1>Авторы</h1>
+<h5>Лучший автор: {{ best }}!</h5>
 <hr>
 {% for author in authors %}
 <h3>{{ author }}</h3>
-<p>Rating {{ author.rating }}</p>
+<p>Рейтинг {{ author.rating }}</p>
 {% if author.post_set.all %}
-<h4>Posts</h4>
+<h4>Посты</h4>
 {% for post in  author.post_set.all %}
-<p><a href="{% url 'showpost' post.pk %}">{{ post }}</a></p>
+<p><a href="{% url 'showpost' post.pk %}">{{ post.title|censor }}</a></p>
 {% endfor %}
 {% else %}
-<h4>No Posts</h4>
+<h4>Постов нет</h4>
 {% endif %}
 
 <hr>

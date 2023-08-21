@@ -1,0 +1,16 @@
+{% extends 'newsportal/default.html' %}
+{% load custom_filters %}
+
+{% block title %}Статья{% endblock title %}
+
+{% block content %}
+<h1>{{ article.title }}</h1>
+<p>{{ article.content|censor }}</p>
+<h4>{{ article.time_created|date:'d:m:Y' }}</h4>
+
+<p>Рейтинг {{ article.rating }}</p>
+<a href="{% url 'like_article' article.pk %}">like</a>
+<a href="{% url 'dislike_article' article.pk %}">dislike</a>
+<p><a href="{% url 'article_edit' article.pk %}">Изменить</a>
+ <a href="{% url 'article_delete' article.pk %}">Удалить</a></p></p>
+{% endblock content %}

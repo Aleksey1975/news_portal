@@ -1,28 +1,136 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from .models import *
-from django.views.generic import ListView, DetailView
+from .filters import *
+from .forms import *
+from django.views.generic import (
+    ListView, DetailView, CreateView, UpdateView, DeleteView
+)
 
-
-class ListPosts(ListView):
-    model = Post
+class ListNews(ListView):
+    queryset = Post.objects.filter(type_post=news)
     ordering = '-time_created'
     template_name = 'newsportal/index_news.html'
     context_object_name = 'news'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
+
+class ListArticles(ListView):
+    queryset = Post.objects.filter(type_post=article)
+    ordering = '-time_created'
+    template_name = 'newsportal/index_articles.html'
+    context_object_name = 'news'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
 
 
-class ListDetail(DetailView):
+
+class DetailNews(DetailView):
     model = Post
     template_name = 'newsportal/one_news.html'
     context_object_name = 'news'
 
 
+class DetailArticle(DetailView):
+    model = Post
+    template_name = 'newsportal/one_article.html'
+    context_object_name = 'article'
+
+class NewsCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'newsportal/post_edit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = 'Добавить новость'
+        context['button'] = 'Добавить'
+        context['title'] = 'Добавить новость'
+        return context
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.type_post = news
+        return super().form_valid(form)
+
+
+
+class ArticleCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'newsportal/post_edit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = 'Добавить статью'
+        context['button'] = 'Добавить'
+        context['title'] = 'Добавить статью'
+        return context
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.type_post = article
+        return super().form_valid(form)
+
+
+
+class NewsEdit(UpdateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'newsportal/post_edit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = 'Отредактировать новость'
+        context['button'] = 'Отредактировать'
+        return context
+
+class ArticleEdit(UpdateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'newsportal/post_edit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = 'Отредактировать статью'
+        context['button'] = 'Отредактировать'
+        return context
+
+class NewsDelete(DeleteView):
+    model = Post
+    template_name = 'newsportal/news_delete.html'
+    success_url = reverse_lazy('news')
+
+
+class ArticleDelete(DeleteView):
+    model = Post
+    template_name = 'newsportal/article_delete.html'
+    success_url = reverse_lazy('articles')
 
 def index(request):
     posts = Post.objects.order_by('-rating')
     best_post = posts[0]
     context = {
-        'title':'News Portal',
+        'title':'Все посты',
         'posts':posts,
         'best_post':best_post
 
@@ -38,22 +146,34 @@ def showpost(request, post_id):
     }
     return render(request, 'newsportal/showpost.html', context)
 
-def like(request, post_id):
+def like_news(request, post_id):
     post = Post.objects.get(pk=post_id)
     post.like()
     post.save()
-    return redirect('showpost', post_id)
+    return redirect('one_news', post_id)
 
-def dislike(request, post_id):
+def dislike_news(request, post_id):
     post = Post.objects.get(pk=post_id)
     post.dislike()
     post.save()
-    return redirect('showpost', post_id)
+    return redirect('one_news', post_id)
+
+def like_article(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    post.like()
+    post.save()
+    return redirect('one_article', post_id)
+
+def dislike_article(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    post.dislike()
+    post.save()
+    return redirect('one_article', post_id)
 
 def comments(request):
     comments = Comment.objects.all()
     context = {
-        'title':'Comments',
+        'title':'Комментарии',
         'comments':comments
     }
     return render(request, 'newsportal/comments.html', context)
@@ -91,7 +211,7 @@ def authors(request):
         a.save()
 
     context = {
-        'title':'Authors',
+        'title':'Авторы',
         'authors':aus,
         'best':the_best,
 

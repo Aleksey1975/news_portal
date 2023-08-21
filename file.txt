@@ -1,0 +1,24 @@
+
+{% for n in news %}
+
+
+<h4>{{ n.time_created|date:'Y-m-d' }} | Рейтинг: {{ n.rating }} | Комментариев: {{ n.comment_set.count }} </h4>
+<h6>
+{% if n.category.all %}
+ {% for cat in n.category.all %}
+{{ cat }}    {% if not forloop.last %}, {% endif %}
+{% endfor %}
+{% endif %}
+</h6>
+<a href="{% url 'one_news' n.pk %}"><h4>{{ n.title|censor }}</h4></a>
+
+
+<p>{{ n.content|truncatechars:200|censor}}</p>
+<hr>
+{% endif %}
+{% endfor %}
+{% else %}  <h1>Новостей нет</h1>
+{% endif %}
+
+{% include 'newsportal/includes/paginations.html' %}
+<br><br>

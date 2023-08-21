@@ -1,25 +1,25 @@
 {% extends 'newsportal/default.html' %}
 {% block title %}{{ title }}{% endblock title %}
-
+{% load custom_filters %}
 {% block content %}
-<h1>Posts</h1>
+<h1>Все посты</h1>
 <hr>
 <hr>
 <hr>
-<h5>The best post is {{ best_post }}!</h5>
-<p>Created date: {{best_post.time_created|date:'Y-m-d'}}, author - {{best_post.author}},
- rating {{best_post.rating}}, title - {{best_post.title}}</p>
-<p><b>Preveiw: </b>{{best_post.preview}}</p>
+<h5>Лучший пост:  {{ best_post }}!</h5>
+<p>Дата создания: {{best_post.time_created|date:'Y-m-d'}}, автор - {{best_post.author}},
+ рейтинг {{best_post.rating}}, заголовок - {{best_post.title|censor}}</p>
+<p><b>Preveiw: </b>{{best_post.preview|censor}}</p>
 
 {% if best_post.comment_set.all %}
-<h5>Comments</h5>
+<h5>Комментарии</h5>
 {% for comment in best_post.comment_set.all %}
-<p>Comment {{ forloop.counter }}: date: {{ comment.date_created|date:'Y-m-d' }}, rating {{comment.rating}},
- content: {{ comment.content }}</p>
+<p>Комментарий {{ forloop.counter }}: Дата: {{ comment.date_created|date:'Y-m-d' }}, рейтинг {{comment.rating}},
+ содержание: {{ comment.content|censor }}</p>
 {% endfor %}
 
 {% else %}
-<h5>No Comments</h5>
+<h5>Комментариев нет</h5>
 
 {% endif %}
 <hr>
@@ -31,18 +31,18 @@
 Author - {{ post.author }}<br>
 {{ post.get_type_post_display }}<br>
 {% if post.category.all %}
-Categories - {% for cat in post.category.all %}
+Категории - {% for cat in post.category.all %}
 {{ cat }}    {% if not forloop.last %}, {% endif %}
 {% endfor %}
-{% else %} Category not defined
+{% else %} Категория не определена
 {% endif %}
 <br>
-Rating  {{ post.rating }}<br>
+Рейтинг  {{ post.rating }}<br>
 {% if  post.comment_set.all %}
-Comments - {% for comment in post.comment_set.all %}
-{{ comment.user }} - {{ comment.content }} | rating  {{ comment.rating }}<br>
+Комментарии - {% for comment in post.comment_set.all %}
+{{ comment.user }} - {{ comment.content }} | рейтинг  {{ comment.rating }}<br>
 {% endfor %}
-{% else %} No comments
+{% else %} Комментариев нет
 {% endif %}
 <br>
 <hr>
