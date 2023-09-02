@@ -14,7 +14,8 @@
 {% include 'newsportal/includes/paginations.html' %}
 <h1>Статьи</h1>
 {% for n in news %}
-<h4>{{ n.time_created|date:'Y-m-d' }} | Рейтинг: {{ n.rating }} | Комментариев: {{ n.comment_set.count }} </h4>
+<h4>{{ n.time_created|date:'Y-m-d' }} | Рейтинг: {{ n.rating }}
+     | Автор: {{ n.author }} | Комментариев: {{ n.comment_set.count }} </h4>
 <h6>
 
  {% for cat in n.category.all %}

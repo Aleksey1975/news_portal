@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from .models import *
@@ -49,6 +49,13 @@ class DetailNews(DetailView):
     model = Post
     template_name = 'newsportal/one_news.html'
     context_object_name = 'news'
+    def get_context_data(self, **kwargs):
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
+        context = super().get_context_data(**kwargs)
+        context['author1'] = str(post.author)
+        context['admin'] = 'admin'
+
+        return context
 
 
 class DetailArticle(DetailView):
@@ -56,8 +63,16 @@ class DetailArticle(DetailView):
     template_name = 'newsportal/one_article.html'
     context_object_name = 'article'
 
+    def get_context_data(self, **kwargs):
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
+        context = super().get_context_data(**kwargs)
+        context['author1'] = str(post.author)
+        context['admin'] = 'admin'
+
+        return context
+
 class NewsCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
-    permission_required = ('simpleapp.add_post',)
+    permission_required = ('newsportal.add_post',)
     raise_exception = True
     form_class = PostForm
     model = Post
@@ -77,8 +92,8 @@ class NewsCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
 
 
 
-class ArticleCreate(LoginRequiredMixin, CreateView):
-    permission_required = ('simpleapp.add_post',)
+class ArticleCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    permission_required = ('newsportal.add_post',)
     raise_exception = True
     form_class = PostForm
     model = Post
@@ -98,25 +113,37 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
 
 
 
-class NewsEdit(LoginRequiredMixin, UpdateView):
-    permission_required = ('simpleapp.change_post',)
+class NewsEdit(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('newsportal.change_post',)
     raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'newsportal/post_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
+        if str(post.author) != str(self.request.user):
+            return HttpResponse("Доступ eзапрещен!")
+        return super(NewsEdit, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['post'] = 'Отредактировать новость'
+        context['title'] = 'Отредактировать новость'
         context['button'] = 'Отредактировать'
         return context
 
-class ArticleEdit(LoginRequiredMixin, UpdateView):
-    permission_required = ('simpleapp.change_post',)
+class ArticleEdit(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    permission_required = ('newsportal.change_post',)
     raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'newsportal/post_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
+        if str(post.author) != str(self.request.user):
+            return HttpResponse("Доступ eзапрещен!")
+        return super(ArticleEdit, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,16 +151,16 @@ class ArticleEdit(LoginRequiredMixin, UpdateView):
         context['button'] = 'Отредактировать'
         return context
 
-class NewsDelete(LoginRequiredMixin, DeleteView):
-    permission_required = ('simpleapp.delete_post',)
+class NewsDelete(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    permission_required = ('newsportal.delete_post',)
     raise_exception = True
     model = Post
     template_name = 'newsportal/news_delete.html'
     success_url = reverse_lazy('news')
 
 
-class ArticleDelete(LoginRequiredMixin, DeleteView):
-    permission_required = ('simpleapp.delete_post',)
+class ArticleDelete(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    permission_required = ('newsportal.delete_post',)
     raise_exception = True
     model = Post
     template_name = 'newsportal/article_delete.html'

@@ -2,6 +2,7 @@
 {% load custom_filters %}
 {% block title %}Удаление статьи{% endblock title %}
 {% block content %}
+      {% if perms.newsportal.delete_post  %}
 <h1>Удаление статьи</h1>
 <hr>
 <form action="" method="post">
@@ -9,4 +10,5 @@
     <p>Удаляем "{{ object.title }}"?</p>
     <input type="submit" value="Удалить" />
 </form>
+{% endif %}
 {% endblock content %}

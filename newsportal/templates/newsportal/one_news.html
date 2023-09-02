@@ -11,6 +11,7 @@
 {% endfor %}
 
 {% endif %}
+<h1>Автор: {{ news.author }}</h1>
 <h1>{{ news.title|censor }}</h1>
 <p>{{ news.content|censor }}</p>
 
@@ -22,16 +23,23 @@
 
 <a href="{% url 'like' news.pk %}">like</a>
 <a href="{% url 'dislike' news.pk %}">dislike</a>
-<p><a href="{% url 'news_edit' news.pk %}">Изменить</a>
-    <a href="{% url 'news_delete' news.pk %}">Удалить</a></p>
 
+    {% if perms.newsportal.add_post and author1 == user.username or user.username == admin  %}
+<p><a href="{% url 'news_edit' news.pk %}">Изменить</a>
+    {% endif %}
+      {% if perms.newsportal.delete_post  %}
+    <a href="{% url 'news_delete' news.pk %}">Удалить</a></p>
+    {% endif %}
 {% if  news.comment_set.all %}
-Комментарии: {% for comment in news.comment_set.all %} <br>
+<br>
+Комментарии: {% for comment in news.comment_set.all %}
 {{ comment.user }} <br> <a href="{% url 'showcomment' comment.pk %}">{{ comment.content|censor }}</a>
 <br> рейтинг  {{ comment.rating }}<hr>
 {% endfor %}
-{% else %} Комментариев нет
+
+{% else %}<br> Комментариев нет
 {% endif %}
+<br>
 
 {% endblock content %}
 
